@@ -452,28 +452,46 @@
 
           updateFilterButtons();
           updateRemainingCount(todos);
+          todoList.innerHTML = '';
 
           if (visibleTodos.length === 0) {
-            todoList.innerHTML = '';
             emptyState.textContent = getEmptyStateMessage();
             emptyState.classList.remove('hidden');
             return;
           }
 
           emptyState.classList.add('hidden');
-          todoList.innerHTML = visibleTodos
-            .map(
-              (todo) => `
-                <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
-                  <div class="todo-main">
-                    <input class="todo-checkbox" type="checkbox" ${todo.completed ? 'checked' : ''} aria-label="標記完成" />
-                    <span class="todo-text">${escapeHtml(todo.text)}</span>
-                  </div>
-                  <button class="todo-delete" type="button" aria-label="刪除待辦">刪除</button>
-                </li>
-              `
-            )
-            .join('');
+
+          visibleTodos.forEach((todo) => {
+            const item = document.createElement('li');
+            item.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+            item.dataset.id = todo.id;
+
+            const main = document.createElement('div');
+            main.className = 'todo-main';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'todo-checkbox';
+            checkbox.checked = todo.completed;
+            checkbox.setAttribute('aria-label', '標記完成');
+
+            const text = document.createElement('span');
+            text.className = 'todo-text';
+            text.textContent = todo.text;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'todo-delete';
+            deleteButton.setAttribute('aria-label', '刪除待辦');
+            deleteButton.textContent = '刪除';
+
+            main.appendChild(checkbox);
+            main.appendChild(text);
+            item.appendChild(main);
+            item.appendChild(deleteButton);
+            todoList.appendChild(item);
+          });
         }
 
         function addTodo(text) {
